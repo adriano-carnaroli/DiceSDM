@@ -2,10 +2,12 @@
     <string name="app_name">Dice SDM</string>
     <string name="jogar">Jogar</string>
     <string name="nao_foi_lancado">Ainda não foi lançado</string>
-    <string name="face_sorteada">Face sorteada:</string>
     <string name="clique_no_botao_abaixo_para_jogar_o_dado">Clique no botão abaixo para jogar o dado</string>
     <string name="selecione_o_numero_de_dados">Selecione o número de dados</string>
     <string name="entre_com_o_numero_de_faces">Entre com o número de faces</string>
+    <string name="face_sorteada">Face sorteada:</string>
+    <string name="faces_sorteadas">Faces sorteadas:</string>
+    <string name="configuracoes">Configurações</string>
     <string-array name="numero_dados">
         <item>1</item>
         <item>2</item>

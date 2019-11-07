@@ -1,18 +1,29 @@
-package br.edu.ifsp.scl.sdm.dicesdm;
+package br.edu.ifsp.scl.sdm.dicesdm.view;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.Random;
 
+import br.edu.ifsp.scl.sdm.dicesdm.R;
+import br.edu.ifsp.scl.sdm.dicesdm.controller.ConfigurationController;
+import br.edu.ifsp.scl.sdm.dicesdm.model.Configuration;
+import br.edu.ifsp.scl.sdm.dicesdm.model.ConfigurationService;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener  {
+
+    private final static int CONFIGURACOES_REQUEST_CODE = 0;
 
     // Random usado para simular o lançamento do dado
     private Random geradorRandomico;
@@ -21,14 +32,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView resultadoTextView;
     private Button jogarDadoButton;
     private ImageView resultadoImageView;
-    private Spinner numDadosSpinner;
     private ImageView resultado2ImageView;
-    private EditText numFacesEditText;
+    private Toolbar toolbar;
+    private Integer numDados;
+    private Integer numFaces;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Toolbar
+        toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle(getString(R.string.app_name));
+        setSupportActionBar(toolbar);
 
         // Após a criação da tela
         geradorRandomico = new Random(System.currentTimeMillis());
@@ -39,26 +56,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         jogarDadoButton.setOnClickListener(this);
         // Recuperando referência para o resultadoImageView do arquivo de layout
         resultadoImageView = findViewById(R.id.resultadoImageView);
-        numDadosSpinner = findViewById(R.id.numDadosSpinner);
         resultado2ImageView = findViewById(R.id.resultado2ImageView);
-        // Recuperando referência para o numFacesEditText do arquivo de layout
-        numFacesEditText = findViewById(R.id.numFacesEditText);
+
+        ConfigurationService config = new ConfigurationService(this);
+        Configuration configuration = config.getConfiguracao();
+        numFaces = configuration.getNumFaces();
+        numDados = configuration.getNumDados();
     }
 
     public void onClick(View view) {
         if (view.getId() == R.id.jogarDadoButton) {
-            // Recuperando o número de dados selecionados
-            int numDados =
-                    Integer.parseInt(numDadosSpinner.getSelectedItem().toString());
             // String que armazena números sorteados
-            String resultadoText = "Faces sorteadas: ";
-            int numFaces;
-            try {
-                numFaces = Integer.parseInt(numFacesEditText.getText().toString());
-            } catch (NumberFormatException e) {
-                // Caso usuário não digite nenhum número de faces
-                numFaces = 6;
-            }
+            String resultadoText = getString(R.string.faces_sorteadas);
             if (numFaces > 6) {
                 resultadoImageView.setVisibility(View.GONE);
                 resultado2ImageView.setVisibility(View.GONE);
@@ -71,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 else {
                     resultado2ImageView.setVisibility(View.GONE);
-                    resultadoText = "Face sorteada: ";
+                    resultadoText = getString(R.string.face_sorteada);
                 }
             }
             // Sorteando números de acordo com número de dados
@@ -92,4 +101,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         iv.setImageResource(idRes);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        boolean retorno = false;
+        switch (item.getItemId()) {
+            case R.id.configuracoesMenuItem:
+                retorno = true;
+                Intent intent = new Intent(this, ConfigurationActivity.class);
+                startActivityForResult(intent, CONFIGURACOES_REQUEST_CODE);
+        }
+
+        return retorno;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == CONFIGURACOES_REQUEST_CODE && resultCode == AppCompatActivity.RESULT_OK) {
+            Configuration configuracao = (Configuration) data.getSerializableExtra(ConfigurationActivity.CONFIGURACAO);
+            if (configuracao != null) {
+                numDados = configuracao.getNumDados();
+                numFaces = configuracao.getNumFaces();
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 }
