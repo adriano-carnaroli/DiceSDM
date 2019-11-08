@@ -13,7 +13,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import br.edu.ifsp.scl.sdm.dicesdm.R;
@@ -21,7 +26,7 @@ import br.edu.ifsp.scl.sdm.dicesdm.controller.ConfigurationController;
 import br.edu.ifsp.scl.sdm.dicesdm.model.Configuration;
 import br.edu.ifsp.scl.sdm.dicesdm.model.ConfigurationService;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener  {
+public class MainActivity extends AppCompatActivity  {
 
     private final static int CONFIGURACOES_REQUEST_CODE = 0;
 
@@ -30,12 +35,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     // Componentes visuais
     private TextView resultadoTextView;
-    private Button jogarDadoButton;
-    private ImageView resultadoImageView;
-    private ImageView resultado2ImageView;
+    private TextView numeroSorteadoTextView;
+    private Button sortearNumeroButton;
+    private Button resetarButton;
+
     private Toolbar toolbar;
-    private Integer numDados;
-    private Integer numFaces;
+    private Integer qtdNumeros;
+    private List<Integer> numerosSorteados = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,54 +57,54 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         geradorRandomico = new Random(System.currentTimeMillis());
         // Recuperando referência para o resultadoTextView do arquivo de layout
         resultadoTextView = findViewById(R.id.resultadoTextView);
+        numeroSorteadoTextView = findViewById(R.id.sorteioTextView);
         // Recuperando referência para o jogarDadoButton do arquivo de layout
-        jogarDadoButton = findViewById(R.id.jogarDadoButton);
-        jogarDadoButton.setOnClickListener(this);
-        // Recuperando referência para o resultadoImageView do arquivo de layout
-        resultadoImageView = findViewById(R.id.resultadoImageView);
-        resultado2ImageView = findViewById(R.id.resultado2ImageView);
+        sortearNumeroButton = findViewById(R.id.jogarDadoButton);
+        sortearNumeroButton.setOnClickListener(getOnClickSortear());
+
+        resetarButton = findViewById(R.id.resetarButton);
+        resetarButton.setOnClickListener(getOnClickResetar());
 
         ConfigurationService config = new ConfigurationService(this);
         Configuration configuration = config.getConfiguracao();
-        numFaces = configuration.getNumFaces();
-        numDados = configuration.getNumDados();
+        qtdNumeros = configuration.getQtdNumeros();
     }
 
-    public void onClick(View view) {
-        if (view.getId() == R.id.jogarDadoButton) {
-            // String que armazena números sorteados
-            String resultadoText = getString(R.string.faces_sorteadas);
-            if (numFaces > 6) {
-                resultadoImageView.setVisibility(View.GONE);
-                resultado2ImageView.setVisibility(View.GONE);
-            }
-            else {
-                resultadoImageView.setVisibility(View.VISIBLE);
-                // Visibilidade do resultado2ImageView de acordo com número de dados
-                if (numDados == 2) {
-                    resultado2ImageView.setVisibility(View.VISIBLE);
+    @NotNull
+    private View.OnClickListener getOnClickSortear() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // String que armazena números sorteados
+                String resultadoText = getString(R.string.numeros_sorteados);
+
+                // Sorteando números
+                Integer resultado;
+                if (numerosSorteados.size() == qtdNumeros) {
+                    Toast.makeText(MainActivity.this, getString(R.string.todos_os_numeros_foram_sorteados), Toast.LENGTH_SHORT).show();
+                } else {
+                    do {
+                        resultado = geradorRandomico.nextInt(qtdNumeros) + 1;
+                    } while (numerosSorteados.contains(resultado));
+                    resultadoText += " " + numerosSorteados.toString();
+                    resultadoTextView.setText(resultadoText.replace("[", "").replace("]", ""));
+                    numeroSorteadoTextView.setText(resultado.toString());
+                    numerosSorteados.add(resultado);
                 }
-                else {
-                    resultado2ImageView.setVisibility(View.GONE);
-                    resultadoText = getString(R.string.face_sorteada);
-                }
             }
-            // Sorteando números de acordo com número de dados
-            for (int i = 1; i <= numDados; i++) {
-                int resultado = geradorRandomico.nextInt(numFaces) + 1;
-                resultadoText += resultado + ", ";
-                ImageView iv = (i == 1) ? resultadoImageView : resultado2ImageView;
-                setImageResource(iv, resultado);
-            }
-            resultadoTextView.setText(resultadoText.substring(0,
-                    resultadoText.lastIndexOf(',')));
-        }
+        };
     }
 
-    private void setImageResource(ImageView iv, int face) {
-        String nomeRes = "dice_" + face;
-        int idRes = getResources().getIdentifier(nomeRes, "drawable", getPackageName());
-        iv.setImageResource(idRes);
+    @NotNull
+    private View.OnClickListener getOnClickResetar() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                numerosSorteados = new ArrayList<>();
+                resultadoTextView.setText(getString(R.string.o_bingo_ainda_nao_comecou));
+                numeroSorteadoTextView.setText("");
+            }
+        };
     }
 
     @Override
@@ -125,8 +131,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (requestCode == CONFIGURACOES_REQUEST_CODE && resultCode == AppCompatActivity.RESULT_OK) {
             Configuration configuracao = (Configuration) data.getSerializableExtra(ConfigurationActivity.CONFIGURACAO);
             if (configuracao != null) {
-                numDados = configuracao.getNumDados();
-                numFaces = configuracao.getNumFaces();
+                qtdNumeros = configuracao.getQtdNumeros();
             }
         }
         super.onActivityResult(requestCode, resultCode, data);

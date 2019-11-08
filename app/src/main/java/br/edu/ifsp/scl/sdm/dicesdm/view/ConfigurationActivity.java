@@ -1,6 +1,7 @@
 package br.edu.ifsp.scl.sdm.dicesdm.view;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,18 +19,23 @@ public class ConfigurationActivity extends AppCompatActivity implements View.OnC
 
     public static final String CONFIGURACAO = "CONFIGURACAO";
 
-    private Spinner numDadosSpinner;
-    private EditText numFacesEditText;
+    private EditText qtdNumerosEditText;
     private Button salvarConfigButton;
     private ConfigurationController configurationController;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_configuration);
+
+        // Toolbar
+        toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle(getString(R.string.configuracoes));
+        setSupportActionBar(toolbar);
+
         // Recuperando referência para o numFacesEditText do arquivo de layout
-        numFacesEditText = findViewById(R.id.numFacesEditText);
-        numDadosSpinner = findViewById(R.id.numDadosSpinner);
+        qtdNumerosEditText = findViewById(R.id.qtdNumerosEditText);
         salvarConfigButton = findViewById(R.id.btnSalvarConfig);
         salvarConfigButton.setOnClickListener(this);
 
@@ -38,10 +44,9 @@ public class ConfigurationActivity extends AppCompatActivity implements View.OnC
     }
 
     public void onClick(View view) {
-        Integer numeroFaces = Integer.parseInt(numFacesEditText.getText().toString());
-        Integer numeroDados = Integer.parseInt(numDadosSpinner.getSelectedItem().toString());
+        Integer qtdNumeros = Integer.parseInt(qtdNumerosEditText.getText().toString());
 
-        Configuration conf = new Configuration(numeroDados, numeroFaces);
+        Configuration conf = new Configuration(qtdNumeros);
 
         configurationController.salvaConfiguracao(conf);
 
@@ -51,8 +56,7 @@ public class ConfigurationActivity extends AppCompatActivity implements View.OnC
 
     public void atualizaView(Configuration configuracao) {
         // Ajusta layout conforme configuração
-        numFacesEditText.setText(configuracao.getNumFaces().toString());
-        numDadosSpinner.setSelection(configuracao.getNumDados() - 1);
+        qtdNumerosEditText.setText(configuracao.getQtdNumeros().toString());
 
         // Setar resultado para a main activity
         setResult(AppCompatActivity.RESULT_OK, new Intent().putExtra(CONFIGURACAO, configuracao));

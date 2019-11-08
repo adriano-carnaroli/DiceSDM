@@ -21,7 +21,7 @@
         android:id="@+id/textView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/clique_no_botao_abaixo_para_jogar_o_dado"
+        android:text="@string/clique_no_bot_o_para_sortear_um_novo_numero"
         android:textSize="18sp"
         android:gravity="center_horizontal"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -32,7 +32,7 @@
         android:id="@+id/jogarDadoButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/jogar"
+        android:text="@string/sortear"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textView" />
@@ -42,29 +42,40 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:text="@string/nao_foi_lancado"
+        android:text="@string/o_bingo_ainda_nao_comecou"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/jogarDadoButton" />
 
-    <ImageView
-        android:id="@+id/resultadoImageView"
+    <TextView
+        android:id="@+id/numeroSorteadoTextView"
         android:layout_width="0dp"
-        android:layout_height="72dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="@string/ultimo_numero_sorteado"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/resultadoTextView"
-        app:srcCompat="@android:color/transparent" />
+        app:layout_constraintTop_toBottomOf="@id/resultadoTextView" />
 
-    <ImageView
-        android:id="@+id/resultado2ImageView"
+    <TextView
+        android:id="@+id/sorteioTextView"
         android:layout_width="0dp"
-        android:layout_height="72dp"
-        app:layout_constraintTop_toBottomOf="@id/resultadoImageView"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text=""
+        android:textSize="100sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@android:color/transparent"
-        android:visibility="gone" />
+        app:layout_constraintTop_toBottomOf="@id/numeroSorteadoTextView" />
 
+    <Button
+        android:id="@+id/resetarButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/resetar_jogo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sorteioTextView" />
 </androidx.constraintlayout.widget.ConstraintLayout>
